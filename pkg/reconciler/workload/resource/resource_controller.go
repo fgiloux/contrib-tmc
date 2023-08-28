@@ -26,8 +26,9 @@ import (
 	kcpcache "github.com/kcp-dev/apimachinery/v2/pkg/cache"
 	kcpdynamic "github.com/kcp-dev/client-go/dynamic"
 	kcpcorev1informers "github.com/kcp-dev/client-go/informers/core/v1"
+
+	// TODO (FGI): we should not have a dependency on kcp. contrib-tmc indexers, logging, reconcilers should be used instead
 	"github.com/kcp-dev/kcp/pkg/indexers"
-	"github.com/kcp-dev/kcp/pkg/informer"
 	"github.com/kcp-dev/kcp/pkg/logging"
 	"github.com/kcp-dev/kcp/pkg/reconciler/apis/apiexport"
 	"github.com/kcp-dev/logicalcluster/v3"
@@ -53,6 +54,7 @@ import (
 	schedulingv1alpha1informers "github.com/kcp-dev/contrib-tmc/client/informers/externalversions/scheduling/v1alpha1"
 	workloadv1alpha1informers "github.com/kcp-dev/contrib-tmc/client/informers/externalversions/workload/v1alpha1"
 	tmcindexers "github.com/kcp-dev/contrib-tmc/pkg/indexers"
+	"github.com/kcp-dev/contrib-tmc/pkg/informer"
 	"github.com/kcp-dev/contrib-tmc/pkg/syncer/shared"
 )
 

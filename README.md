@@ -1,10 +1,10 @@
 # TMC - Transparent Multi-Cluster
 
-Experimental multi-cluster workload management platform for Kubernetes, built on top of [KCP](https://github.com/kcp-dev/kcp)
+Experimental multi-cluster workload management platform for Kubernetes, built on top of [kcp](https://github.com/kcp-dev/kcp)
 
 ## What is TMC?
 
-TMC is a multi-cluster management platform that allows you to manage multiple Kubernetes clusters from a single control plane. TMC should be a plugin of KCP and extend its functionality to support multi-cluster workload management.
+TMC is a multi-cluster management platform that allows you to manage multiple Kubernetes clusters from a single control plane. TMC is to be layered on top of KCP and extends its functionality to multi-cluster workload management.
 
 ## Quick start
 
@@ -21,9 +21,9 @@ TMC is a multi-cluster management platform that allows you to manage multiple Ku
   # Or add the bin directory to your PATH
   export PATH=$PATH:$(pwd)/bin
 
-# Start TMC-KCP
+# Deploy TMC on top of kcp 
 
-  go run ./cmd/tmc start
+  TBD
 
 # Create TMC workspace
 
@@ -41,7 +41,7 @@ TMC is a multi-cluster management platform that allows you to manage multiple Ku
 
   kubectl tmc bind compute root:tmc-ws
 
-# Create a workload on TMC-KCP cluster
+# Create some workload in a kcp workspace
 
   kubectl create deployment kuard --image gcr.io/kuar-demo/kuard-amd64:blue
 ```
@@ -49,9 +49,11 @@ TMC is a multi-cluster management platform that allows you to manage multiple Ku
 ## Known issues
 
 - [ ] TMC currently does not support sharding
-- [ ] Placements do not work cross-workspaces https://github.com/kcp-dev/contrib-tmc/issues/4
-- [ ] Tunneling does not work as of now
+- [ ] Log tunneling needs to be brought back
 
 ## Background
 
+Historically TMC was part of kcp. It has now been spinned off as a separate project, whose capabilities can be layered on top of kcp. This leaves kcp more slim for use cases not needing TMC.
+
 https://github.com/kcp-dev/kcp/issues/2954
+

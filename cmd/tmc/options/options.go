@@ -17,78 +17,49 @@ limitations under the License.
 package options
 
 import (
-	"io"
+	"errors"
 
-	kcpcoreoptions "github.com/kcp-dev/kcp/cmd/kcp-core/options"
-
-	cliflag "k8s.io/component-base/cli/flag"
-
-	tmcserveroptions "github.com/kcp-dev/contrib-tmc/tmc/server/options"
+	"github.com/spf13/pflag"
+	"k8s.io/component-base/logs"
+	logsapiv1 "k8s.io/component-base/logs/api/v1"
 )
 
 type Options struct {
-	Output io.Writer
-
-	Generic kcpcoreoptions.GenericOptions
-	Server  tmcserveroptions.Options
-	Extra   ExtraOptions
+	QPS        float32
+	Burst      int
+	Kubeconfig string
+	Context    string
+	Logs       *logs.Options
 }
 
-type ExtraOptions struct{}
+func NewOptions() *Options {
+	// Default to -v=2
+	logsOptions := logs.NewOptions()
+	logsOptions.Verbosity = logsapiv1.VerbosityLevel(2)
 
-func NewOptions(rootDir string) *Options {
-	opts := &Options{
-		Output: nil,
-
-		Server:  *tmcserveroptions.NewOptions(rootDir),
-		Generic: *kcpcoreoptions.NewGeneric(rootDir),
-		Extra:   ExtraOptions{},
+	return &Options{
+		QPS:   30,
+		Burst: 20,
+		Logs:  logsOptions,
 	}
-	return opts
 }
 
-type completedOptions struct {
-	Output io.Writer
-
-	Generic kcpcoreoptions.GenericOptions
-	Server  tmcserveroptions.CompletedOptions
-	Extra   ExtraOptions
+func (options *Options) AddFlags(fs *pflag.FlagSet) {
+	fs.Float32Var(&options.QPS, "qps", options.QPS, "QPS to use when talking to API servers.")
+	fs.IntVar(&options.Burst, "burst", options.Burst, "Burst to use when talking to API servers.")
+	fs.StringVar(&options.Kubeconfig, "kubeconfig", options.Kubeconfig, "Kubeconfig file for the kcp workspace.")
+	fs.StringVar(&options.Context, "context", options.Context, "Context to use in the kubeconfig file for the kcp workspace, instead of the current context.")
+	logsapiv1.AddFlags(options.Logs, fs)
 }
 
-type CompletedOptions struct {
-	*completedOptions
+func (options *Options) Complete() error {
+	return nil
 }
 
-func (o *Options) AddFlags(fss *cliflag.NamedFlagSets) {
-	o.Generic.AddFlags(fss)
-	o.Server.AddFlags(fss)
-}
-
-func (o *Options) Complete() (*CompletedOptions, error) {
-	generic, err := o.Generic.Complete()
-	if err != nil {
-		return nil, err
+func (options *Options) Validate() error {
+	// TODO (FGI): we could use a location by convention and make it optional
+	if options.Kubeconfig == "" {
+		return errors.New("--from-kubeconfig is required")
 	}
-
-	server, err := o.Server.Complete(generic.RootDirectory)
-	if err != nil {
-		return nil, err
-	}
-
-	return &CompletedOptions{
-		completedOptions: &completedOptions{
-			Output:  o.Output,
-			Generic: *generic,
-			Server:  *server,
-		},
-	}, nil
-}
-
-func (o *CompletedOptions) Validate() []error {
-	errs := []error{}
-
-	errs = append(errs, o.Generic.Validate()...)
-	errs = append(errs, o.Server.Validate()...)
-
-	return errs
+	return nil
 }

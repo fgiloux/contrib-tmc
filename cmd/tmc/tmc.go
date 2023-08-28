@@ -17,32 +17,27 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/kcp-dev/kcp/pkg/embeddedetcd"
 	"github.com/spf13/cobra"
 
-	"k8s.io/apimachinery/pkg/util/errors"
 	genericapiserver "k8s.io/apiserver/pkg/server"
-	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+
 	"k8s.io/component-base/cli"
-	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/component-base/cli/globalflag"
-	"k8s.io/component-base/logs"
 	logsapiv1 "k8s.io/component-base/logs/api/v1"
 	_ "k8s.io/component-base/logs/json/register"
-	"k8s.io/component-base/term"
 	"k8s.io/component-base/version"
+
 	"k8s.io/klog/v2"
 
+	clientoptions "github.com/kcp-dev/contrib-tmc/cmd/tmc/options"
+	"github.com/kcp-dev/contrib-tmc/pkg/features"
+	"github.com/kcp-dev/contrib-tmc/pkg/manager"
+	"github.com/kcp-dev/contrib-tmc/pkg/manager/options"
 	"github.com/kcp-dev/contrib-tmc/tmc/cmd/help"
-	tmcfeatures "github.com/kcp-dev/contrib-tmc/tmc/features"
-	tmcserver "github.com/kcp-dev/contrib-tmc/tmc/server"
-	"github.com/kcp-dev/contrib-tmc/tmc/server/options"
 )
 
 func main() {
@@ -50,7 +45,7 @@ func main() {
 
 	cmd := &cobra.Command{
 		Use:   "tmc",
-		Short: "TMC - Transparent Multi Cluster - kcp subproject for multi-cluster workload management",
+		Short: "TMC - Transparent Multi Cluster - kcp sub-project for multi-cluster workload management",
 		Long: help.Doc(`
 			TMC is the easiest way to manage Kubernetes applications against one or
 			more clusters, by giving you a personal control plane that schedules your
@@ -61,131 +56,71 @@ func main() {
 			having access to the underlying clusters.
 
 			To get started, launch a new cluster with 'tmc start', which will
-			initialize tmc and bootstrap its resources inside KCP
+			initialize tmc and bootstrap its resources inside kcp.
 		`),
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
 
-	cols, _, _ := term.TerminalSize(cmd.OutOrStdout())
+	clientOptions := clientoptions.NewOptions()
 
-	// manually extract root directory from flags first as it influence all other flags
-	rootDir := ".tmc"
-	for i, f := range os.Args {
-		if f == "--root-directory" {
-			if i < len(os.Args)-1 {
-				rootDir = os.Args[i+1]
-			} // else let normal flag processing fail
-		} else if strings.HasPrefix(f, "--root-directory=") {
-			rootDir = strings.TrimPrefix(f, "--root-directory=")
-		}
-	}
-
-	// HACK: We already pass the root directory to the generic options, but we need to
-	// strip it from the command line arguments so that the generic options don't
-	// complain about unknown flags.
-	for i, f := range os.Args {
-		if f == "--root-directory" || strings.HasPrefix(f, "--root-directory=") {
-			os.Args = append(os.Args[:i], os.Args[i+2:]...)
-			break
-		}
-	}
-
-	serverOptions := options.NewOptions(rootDir)
-	serverOptions.Core.GenericControlPlane.Logs.Verbosity = logsapiv1.VerbosityLevel(2)
 	startCmd := &cobra.Command{
 		Use:   "start",
-		Short: "Start the control plane process",
+		Short: "Start the controller manager",
 		Long: help.Doc(`
-			Start the control plane process
+			Start the controller manager
 
-			The server process listens on port 6443 and will act like a Kubernetes
-			API server. It will initialize any necessary data to the provided start
-			location or as a '.kcp' directory in the current directory. An admin
-			kubeconfig file will be generated at initialization time that may be
-			used to access the control plane.
+			The controller manager is in charge of starting the controllers reconciliating TMC resources.
 		`),
 		PersistentPreRunE: func(*cobra.Command, []string) error {
-			// silence client-go warnings.
-			// apiserver loopback clients should not log self-issued warnings.
-			rest.SetDefaultWarningHandler(rest.NoWarnings{})
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// run as early as possible to avoid races later when some components (e.g. grpc) start early using klog
-			if err := logsapiv1.ValidateAndApply(serverOptions.Core.GenericControlPlane.Logs, tmcfeatures.DefaultFeatureGate); err != nil {
+			if err := logsapiv1.ValidateAndApply(clientOptions.Logs, features.DefaultFeatureGate); err != nil {
 				return err
-			}
-
-			completed, err := serverOptions.Complete(rootDir)
-			if err != nil {
-				return err
-			}
-
-			if errs := completed.Validate(); len(errs) > 0 {
-				return errors.NewAggregate(errs)
 			}
 
 			logger := klog.FromContext(cmd.Context())
-			logger.Info("running with selected batteries", "batteries", strings.Join(completed.Core.Extra.BatteriesIncluded, ","))
+			logger.Info("Instantiating the TMC manager")
 
-			config, err := tmcserver.NewConfig(*completed)
+			options := options.NewOptions()
+			completedOptions, err := options.Complete()
 			if err != nil {
 				return err
 			}
-
-			completedConfig, err := config.Complete()
+			config, err := manager.NewConfig(*completedOptions)
 			if err != nil {
 				return err
 			}
-
 			ctx := genericapiserver.SetupSignalContext()
-
-			// the etcd server must be up before NewServer because storage decorators access it right away
-			if completedConfig.Core.EmbeddedEtcd.Config != nil {
-				if err := embeddedetcd.NewServer(completedConfig.Core.EmbeddedEtcd).Run(ctx); err != nil {
-					return err
-				}
+			kcpClientConfigOverrides := &clientcmd.ConfigOverrides{
+				CurrentContext: clientOptions.Kubeconfig,
 			}
-
-			s, err := tmcserver.NewServer(completedConfig)
+			kcpClientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+				&clientcmd.ClientConfigLoadingRules{ExplicitPath: clientOptions.Kubeconfig},
+				kcpClientConfigOverrides).ClientConfig()
 			if err != nil {
 				return err
 			}
-			return s.Run(ctx)
+			kcpClientConfig.QPS = clientOptions.QPS
+			kcpClientConfig.Burst = clientOptions.Burst
+			if mgr, err := manager.NewManager(ctx, config, kcpClientConfig); err == nil {
+				return err
+			} else {
+				return mgr.Start(ctx)
+			}
 		},
 	}
 
-	// add start named flag sets to start flags
-	fss := cliflag.NamedFlagSets{}
-	serverOptions.AddFlags(&fss)
-	globalflag.AddGlobalFlags(fss.FlagSet("global"), cmd.Name(), logs.SkipLoggingConfigurationFlags())
-	startFlags := startCmd.Flags()
-	for _, f := range fss.FlagSets {
-		startFlags.AddFlagSet(f)
+	clientOptions.AddFlags(startCmd.Flags())
+
+	if v := version.Get().String(); len(v) == 0 {
+		startCmd.Version = "<unknown>"
+	} else {
+		startCmd.Version = v
 	}
 
-	startOptionsCmd := &cobra.Command{
-		Use:   "options",
-		Short: "Show all start command options",
-		Long: help.Doc(`
-			Show all start command options
-
-			"tmc start"" has a large number of options. This command shows all of them.
-		`),
-		PersistentPreRunE: func(*cobra.Command, []string) error {
-			// silence client-go warnings.
-			// apiserver loopback clients should not log self-issued warnings.
-			rest.SetDefaultWarningHandler(rest.NoWarnings{})
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(cmd.OutOrStderr(), usageFmt, startCmd.UseLine())
-			cliflag.PrintSections(cmd.OutOrStderr(), fss, cols)
-			return nil
-		},
-	}
-	startCmd.AddCommand(startOptionsCmd)
 	cmd.AddCommand(startCmd)
 
 	help.FitTerminal(cmd.OutOrStdout())
