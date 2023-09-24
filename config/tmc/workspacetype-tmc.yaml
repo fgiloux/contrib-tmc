@@ -14,7 +14,6 @@ spec:
     export: workload.kcp.io
   - path: root:tmc
     export: apiresource.kcp.io
-  defaultChildren:
-    types:
-    - name: tmc
-      path: root
+  defaultChildWorkspaceType:
+    name: tmc
+    path: root
