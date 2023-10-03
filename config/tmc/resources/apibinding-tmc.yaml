@@ -1,0 +1,56 @@
+apiVersion: apis.kcp.io/v1alpha1
+kind: APIBinding
+metadata:
+  name: tmc.kcp.io
+spec:
+  reference:
+    export:
+      name: tmc.kcp.io
+      path: root:tmc
+  permissionClaims:
+  - group: "apis.kcp.io"
+    resource: "apibindings"
+    state: Accepted
+    all: true
+  - group: ""
+    resource: "namespaces"
+    state: Accepted
+    all: true
+  - group: "core.kcp.io"
+    resource: "shards"
+    identityHash: "8d5490c943b9026c393fef2a71fdf2d1ae39c35ef99c19276ba75c6763c6e505"
+    state: Accepted
+    all: true
+  - group: "apiextensions.k8s.io"
+    resource: "customresourcedefinitions"
+    identityHash: "bb6ac319ead1e1ed66c7e438713d7a53c2a1d00e895d841453521ff969861b56"
+    state: Accepted
+    all: true
+  - group: "core.kcp.io"
+    resource: "logicalclusters"
+    identityHash: "8d5490c943b9026c393fef2a71fdf2d1ae39c35ef99c19276ba75c6763c6e505"
+    state: Accepted
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "clusterroles"
+    state: Accepted
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "clusterrolebindings"
+    state: Accepted
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apiexports"
+    identityHash: "bb6ac319ead1e1ed66c7e438713d7a53c2a1d00e895d841453521ff969861b56"
+    state: Accepted
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apibindings"
+    identityHash: "bb6ac319ead1e1ed66c7e438713d7a53c2a1d00e895d841453521ff969861b56"
+    state: Accepted
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apiresourceschemas"
+    identityHash: "bb6ac319ead1e1ed66c7e438713d7a53c2a1d00e895d841453521ff969861b56"
+    state: Accepted
+    all: true

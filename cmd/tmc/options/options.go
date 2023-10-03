@@ -18,6 +18,7 @@ package options
 
 import (
 	"errors"
+	"os"
 
 	"github.com/spf13/pflag"
 	"k8s.io/component-base/logs"
@@ -53,11 +54,15 @@ func (options *Options) AddFlags(fs *pflag.FlagSet) {
 }
 
 func (options *Options) Complete() error {
+	if options.Kubeconfig == "" {
+		if kubeconfig := os.Getenv("KUBECONFIG"); kubeconfig != "" {
+			options.Kubeconfig = kubeconfig
+		}
+	}
 	return nil
 }
 
 func (options *Options) Validate() error {
-	// TODO (FGI): we could use a location by convention and make it optional
 	if options.Kubeconfig == "" {
 		return errors.New("--from-kubeconfig is required")
 	}

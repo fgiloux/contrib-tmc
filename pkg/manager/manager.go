@@ -53,7 +53,7 @@ that do the reconciliation for TMC.
 */
 
 const (
-	apiExportName = "tmc"
+	apiExportName = "tmc.kcp.io"
 	resyncPeriod  = 10 * time.Hour
 )
 
@@ -119,12 +119,20 @@ func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Co
 		cacheKcpClusterClient,
 		resyncPeriod,
 	)
-
 	metadataClusterClient, err := metadataclient.NewDynamicMetadataClusterClientForConfig(
 		rest.AddUserAgent(rest.CopyConfig(m.clientConfig), "kcp-partial-metadata-informers"))
 	if err != nil {
 		return nil, err
 	}
+	// Setup apiextensions * informers
+	m.apiExtensionsClusterClient, err = kcpapiextensionsclientset.NewForConfig(m.clientConfig)
+	if err != nil {
+		return nil, err
+	}
+	m.apiExtensionsSharedInformerFactory = kcpapiextensionsinformers.NewSharedInformerFactoryWithOptions(
+		m.apiExtensionsClusterClient,
+		resyncPeriod,
+	)
 	crdGVRSource, err := informer.NewCRDGVRSource(m.apiExtensionsSharedInformerFactory.Apiextensions().V1().CustomResourceDefinitions().Informer())
 	if err != nil {
 		return nil, err
@@ -139,15 +147,6 @@ func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Co
 	if err != nil {
 		return nil, err
 	}
-	// Setup apiextensions * informers
-	m.apiExtensionsClusterClient, err = kcpapiextensionsclientset.NewForConfig(m.clientConfig)
-	if err != nil {
-		return nil, err
-	}
-	m.apiExtensionsSharedInformerFactory = kcpapiextensionsinformers.NewSharedInformerFactoryWithOptions(
-		m.apiExtensionsClusterClient,
-		resyncPeriod,
-	)
 
 	// add tmc virtual workspaces
 	virtualWorkspacesConfig := rest.CopyConfig(m.clientConfig)
@@ -178,14 +177,6 @@ func (m Manager) Start(ctx context.Context) error {
 
 	logger := klog.FromContext(ctx)
 	logger.V(2).Info("starting manager")
-	logger.Info("starting kube informers")
-	m.kubeSharedInformerFactory.Start(m.stopCh)
-	m.kcpSharedInformerFactory.Start(m.stopCh)
-	m.apiExtensionsSharedInformerFactory.Start(m.stopCh)
-	m.kcpSharedInformerFactory.Start(m.stopCh)
-	m.cacheKcpSharedInformerFactory.Start(m.stopCh)
-	m.tmcSharedInformerFactory.Start(m.stopCh)
-	m.discoveringDynamicSharedInformerFactory.Start(m.stopCh)
 
 	if err := m.installApiResourceController(ctx); err != nil {
 		return err
@@ -230,6 +221,15 @@ func (m Manager) Start(ctx context.Context) error {
 	if err := m.installWorkloadDefaultLocationController(ctx); err != nil {
 		return err
 	}
+
+	logger.Info("starting kube informers")
+	m.kubeSharedInformerFactory.Start(m.stopCh)
+	m.kcpSharedInformerFactory.Start(m.stopCh)
+	m.apiExtensionsSharedInformerFactory.Start(m.stopCh)
+	m.kcpSharedInformerFactory.Start(m.stopCh)
+	m.cacheKcpSharedInformerFactory.Start(m.stopCh)
+	m.tmcSharedInformerFactory.Start(m.stopCh)
+	m.discoveringDynamicSharedInformerFactory.Start(m.stopCh)
 
 	m.kubeSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	m.kcpSharedInformerFactory.WaitForCacheSync(m.stopCh)

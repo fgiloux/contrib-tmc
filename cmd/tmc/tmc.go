@@ -63,6 +63,8 @@ func main() {
 	}
 
 	clientOptions := clientoptions.NewOptions()
+	clientOptions.Complete()
+	clientOptions.Validate()
 
 	startCmd := &cobra.Command{
 		Use:   "start",
@@ -95,7 +97,7 @@ func main() {
 			}
 			ctx := genericapiserver.SetupSignalContext()
 			kcpClientConfigOverrides := &clientcmd.ConfigOverrides{
-				CurrentContext: clientOptions.Kubeconfig,
+				CurrentContext: clientOptions.Context,
 			}
 			kcpClientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 				&clientcmd.ClientConfigLoadingRules{ExplicitPath: clientOptions.Kubeconfig},
@@ -105,7 +107,8 @@ func main() {
 			}
 			kcpClientConfig.QPS = clientOptions.QPS
 			kcpClientConfig.Burst = clientOptions.Burst
-			if mgr, err := manager.NewManager(ctx, config, kcpClientConfig); err == nil {
+			mgr, err := manager.NewManager(ctx, config, kcpClientConfig)
+			if err != nil {
 				return err
 			} else {
 				return mgr.Start(ctx)

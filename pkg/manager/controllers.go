@@ -26,7 +26,6 @@ import (
 
 	kcpclusterclientset "github.com/kcp-dev/kcp/sdk/client/clientset/versioned/cluster"
 	kcpapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/kcp/clientset/versioned"
-	kcpapiextensionsinformers "k8s.io/apiextensions-apiserver/pkg/client/kcp/informers/externalversions"
 
 	tmcclusterclientset "github.com/kcp-dev/contrib-tmc/client/clientset/versioned/cluster"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/apiresource"
@@ -64,16 +63,13 @@ func (m *Manager) installApiResourceController(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
-	crdSharedInformerFactory := kcpapiextensionsinformers.NewSharedInformerFactoryWithOptions(crdClusterClient, resyncPeriod)
-
 	c, err := apiresource.NewController(
 		crdClusterClient,
 		kcpClusterClient,
 		tmcclusterclientset,
 		m.tmcSharedInformerFactory.Apiresource().V1alpha1().NegotiatedAPIResources(),
 		m.tmcSharedInformerFactory.Apiresource().V1alpha1().APIResourceImports(),
-		crdSharedInformerFactory.Apiextensions().V1().CustomResourceDefinitions(),
+		m.apiExtensionsSharedInformerFactory.Apiextensions().V1().CustomResourceDefinitions(),
 	)
 	if err != nil {
 		return err
@@ -82,8 +78,6 @@ func (m *Manager) installApiResourceController(ctx context.Context) error {
 	go func() {
 		// Wait for shared informer factories to by synced.
 		<-m.syncedCh
-		crdSharedInformerFactory.Start(ctx.Done())
-		crdSharedInformerFactory.WaitForCacheSync(ctx.Done())
 		c.Start(ctx, 2)
 	}()
 

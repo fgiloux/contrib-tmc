@@ -171,6 +171,10 @@ generate: tools codegen crds
 	make imports
 .PHONY: generate
 
+install:
+	./hack/install.sh
+.PHONY: install
+
 
 E2E_PARALLELISM ?=
 ifdef E2E_PARALLELISM

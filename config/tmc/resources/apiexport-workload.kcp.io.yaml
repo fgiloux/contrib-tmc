@@ -6,4 +6,8 @@ metadata:
 spec:
   latestResourceSchemas:
   - v230618-0f88c5d.synctargets.workload.kcp.io
+  identity:
+    secretRef:
+      name: tmc-identity
+      namespace: default
 status: {}

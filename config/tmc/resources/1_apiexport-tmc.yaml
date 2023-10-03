@@ -1,0 +1,48 @@
+apiVersion: apis.kcp.io/v1alpha1
+kind: APIExport
+metadata:
+  creationTimestamp: null
+  name: tmc.kcp.io
+spec:
+  latestResourceSchemas:
+  - v230711-a961437.apiresourceimports.apiresource.kcp.io
+  - v230711-a961437.negotiatedapiresources.apiresource.kcp.io
+  - v230618-0f88c5d.locations.scheduling.kcp.io
+  - v230618-0f88c5d.placements.scheduling.kcp.io
+  - v230618-0f88c5d.synctargets.workload.kcp.io
+  permissionClaims:
+  - group: ""
+    resource: "namespaces"
+    all: true
+  - group: "core.kcp.io"
+    resource: "shards"
+    identityHash: "8d5490c943b9026c393fef2a71fdf2d1ae39c35ef99c19276ba75c6763c6e505"
+    all: true
+  - group: "apiextensions.k8s.io"
+    resource: "customresourcedefinitions"
+    identityHash: "bb6ac319ead1e1ed66c7e438713d7a53c2a1d00e895d841453521ff969861b56"
+    all: true
+  - group: "core.kcp.io"
+    resource: "logicalclusters"
+    identityHash: "8d5490c943b9026c393fef2a71fdf2d1ae39c35ef99c19276ba75c6763c6e505"
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "clusterroles"
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "clusterrolebindings"
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apiexports"
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apibindings"
+    all: true
+  - group: "apis.kcp.io"
+    resource: "apiresourceschemas"
+    all: true
+  identity:
+    secretRef:
+      name: tmc-identity
+      namespace: default
+status: {}
