@@ -33,6 +33,9 @@ import (
 
 	"k8s.io/klog/v2"
 
+	cacheclient "github.com/kcp-dev/kcp/pkg/cache/client"
+	"github.com/kcp-dev/kcp/pkg/cache/client/shard"
+
 	clientoptions "github.com/kcp-dev/contrib-tmc/cmd/tmc/options"
 	"github.com/kcp-dev/contrib-tmc/pkg/features"
 	"github.com/kcp-dev/contrib-tmc/pkg/manager"
@@ -107,7 +110,23 @@ func main() {
 			}
 			kcpClientConfig.QPS = clientOptions.QPS
 			kcpClientConfig.Burst = clientOptions.Burst
-			mgr, err := manager.NewManager(ctx, config, kcpClientConfig)
+			// TODO (FGI) this needs to be amended so that the flag --cache-config is
+			// taken in consideration
+			cacheClientConfigOverrides := &clientcmd.ConfigOverrides{
+				CurrentContext: "system:admin",
+			}
+			cacheClientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+				&clientcmd.ClientConfigLoadingRules{ExplicitPath: clientOptions.Kubeconfig},
+				cacheClientConfigOverrides).ClientConfig()
+			if err != nil {
+				return err
+			}
+			cacheClientConfig.QPS = clientOptions.QPS
+			cacheClientConfig.Burst = clientOptions.Burst
+			cacheClientConfig = cacheclient.WithCacheServiceRoundTripper(cacheClientConfig)
+			cacheClientConfig = cacheclient.WithShardNameFromContextRoundTripper(cacheClientConfig)
+			cacheClientConfig = cacheclient.WithDefaultShardRoundTripper(cacheClientConfig, shard.Wildcard)
+			mgr, err := manager.NewManager(ctx, config, kcpClientConfig, cacheClientConfig)
 			if err != nil {
 				return err
 			} else {

@@ -73,7 +73,7 @@ type Manager struct {
 }
 
 // NewManager creates a manager able to start controllers
-func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Config) (*Manager, error) {
+func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig, cacheClientConfig *rest.Config) (*Manager, error) {
 	var err error
 	m := &Manager{
 		Config:   cfg,
@@ -107,10 +107,6 @@ func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Co
 		informerKubeClient,
 		resyncPeriod,
 	)
-	cacheClientConfig, err := m.Options.CacheClient.RestConfig(rest.CopyConfig(m.clientConfig))
-	if err != nil {
-		return nil, err
-	}
 	cacheKcpClusterClient, err := kcpclusterclientset.NewForConfig(cacheClientConfig)
 	if err != nil {
 		return nil, err
@@ -119,6 +115,7 @@ func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Co
 		cacheKcpClusterClient,
 		resyncPeriod,
 	)
+
 	metadataClusterClient, err := metadataclient.NewDynamicMetadataClusterClientForConfig(
 		rest.AddUserAgent(rest.CopyConfig(m.clientConfig), "kcp-partial-metadata-informers"))
 	if err != nil {
@@ -164,7 +161,6 @@ func NewManager(ctx context.Context, cfg *Config, bootstrapClientConfig *rest.Co
 	if err != nil {
 		return nil, err
 	}
-
 	return m, nil
 }
 
@@ -226,7 +222,6 @@ func (m Manager) Start(ctx context.Context) error {
 	m.kubeSharedInformerFactory.Start(m.stopCh)
 	m.kcpSharedInformerFactory.Start(m.stopCh)
 	m.apiExtensionsSharedInformerFactory.Start(m.stopCh)
-	m.kcpSharedInformerFactory.Start(m.stopCh)
 	m.cacheKcpSharedInformerFactory.Start(m.stopCh)
 	m.tmcSharedInformerFactory.Start(m.stopCh)
 	m.discoveringDynamicSharedInformerFactory.Start(m.stopCh)
@@ -234,7 +229,6 @@ func (m Manager) Start(ctx context.Context) error {
 	m.kubeSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	m.kcpSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	m.apiExtensionsSharedInformerFactory.WaitForCacheSync(m.stopCh)
-	m.kcpSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	m.cacheKcpSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	m.tmcSharedInformerFactory.WaitForCacheSync(m.stopCh)
 	logger.V(2).Info("starting dynamic metadata informer worker")

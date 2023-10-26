@@ -25,7 +25,6 @@ import (
 	kcpkubernetesclientset "github.com/kcp-dev/client-go/kubernetes"
 
 	kcpclusterclientset "github.com/kcp-dev/kcp/sdk/client/clientset/versioned/cluster"
-	kcpapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/kcp/clientset/versioned"
 
 	tmcclusterclientset "github.com/kcp-dev/contrib-tmc/client/clientset/versioned/cluster"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/apiresource"
@@ -40,9 +39,9 @@ import (
 	workloadreplicateclusterrolebinding "github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/replicateclusterrolebinding"
 	workloadreplicatelogicalcluster "github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/replicatelogicalcluster"
 	workloadresource "github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/resource"
-
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/synctarget"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/synctargetexports"
+	kcpapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/kcp/clientset/versioned"
 )
 
 func (m *Manager) installApiResourceController(ctx context.Context) error {
