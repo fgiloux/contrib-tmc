@@ -14,19 +14,60 @@ spec:
   - group: ""
     resource: "namespaces"
     all: true
+  - group: ""
+    resource: "serviceaccounts"
+    all: true
+# ????
+#  - group: ""
+#    resource: "limitranges"
+#    all: true
+  - group: ""
+    resource: "resourcequotas"
+    all: true
+  - group: "events.k8s.io"
+    resource: "events"
+    all: true
+  - group: ""
+    resource: "configmaps"
+    all: true
+  - group: ""
+    resource: "secrets"
+    all: true
+  - group: "coordination.k8s.io"
+    resource: "leases"
+    all: true
+  - group: "admissionregistration.k8s.io"
+    resource: "mutatingwebhookconfigurations"
+    all: true
+  - group: "admissionregistration.k8s.io"
+    resource: "validatingwebhookconfigurations"
+    all: true
+  - group: "admissionregistration.k8s.io"
+    resource: "validatingadmissionpolicybindings"
+    all: true
+# ????
+  - group: "certificates.k8s.io"
+    resource: "certificatesigningrequests"
+    all: true
   - group: "core.kcp.io"
     resource: "shards"
-    identityHash: "d22f1749e9c3524f15755a0d342cc380a237e44214283ce6cf88a140924da93f"
+    identityHash: "793f074acdc6cfb7da6cdca906a698320971caf43b01cf5df0fdcefed5dacf02"
     all: true
   - group: "apiextensions.k8s.io"
     resource: "customresourcedefinitions"
     all: true
   - group: "core.kcp.io"
     resource: "logicalclusters"
-    identityHash: "d22f1749e9c3524f15755a0d342cc380a237e44214283ce6cf88a140924da93f"
+    identityHash: "793f074acdc6cfb7da6cdca906a698320971caf43b01cf5df0fdcefed5dacf02"
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "roles"
     all: true
   - group: "rbac.authorization.k8s.io"
     resource: "clusterroles"
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "rolebindings"
     all: true
   - group: "rbac.authorization.k8s.io"
     resource: "clusterrolebindings"
