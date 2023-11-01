@@ -87,7 +87,7 @@ func main() {
 			}
 
 			logger := klog.FromContext(cmd.Context())
-			logger.Info("Instantiating the TMC manager")
+			logger.Info("instantiating manager")
 
 			options := options.NewOptions()
 			completedOptions, err := options.Complete()
@@ -129,9 +129,14 @@ func main() {
 			mgr, err := manager.NewManager(ctx, config, kcpClientConfig, cacheClientConfig)
 			if err != nil {
 				return err
-			} else {
-				return mgr.Start(ctx)
 			}
+			mgr.Start(ctx)
+			 if err != nil {
+                                return err
+			}
+			<- ctx.Done()
+			logger.Info("stopping")
+			return nil
 		},
 	}
 
