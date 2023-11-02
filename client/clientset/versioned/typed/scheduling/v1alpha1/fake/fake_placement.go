@@ -25,7 +25,6 @@ import (
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
-	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	testing "k8s.io/client-go/testing"
@@ -39,9 +38,9 @@ type FakePlacements struct {
 	Fake *FakeSchedulingV1alpha1
 }
 
-var placementsResource = schema.GroupVersionResource{Group: "scheduling.kcp.io", Version: "v1alpha1", Resource: "placements"}
+var placementsResource = v1alpha1.SchemeGroupVersion.WithResource("placements")
 
-var placementsKind = schema.GroupVersionKind{Group: "scheduling.kcp.io", Version: "v1alpha1", Kind: "Placement"}
+var placementsKind = v1alpha1.SchemeGroupVersion.WithKind("Placement")
 
 // Get takes name of the placement, and returns the corresponding placement object, and an error if there is any.
 func (c *FakePlacements) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Placement, err error) {

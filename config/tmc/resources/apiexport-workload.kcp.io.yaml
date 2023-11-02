@@ -4,10 +4,10 @@ metadata:
   creationTimestamp: null
   name: workload.kcp.io
 spec:
-  latestResourceSchemas:
-  - v230618-0f88c5d.synctargets.workload.kcp.io
   identity:
     secretRef:
       name: tmc-identity
       namespace: default
+  latestResourceSchemas:
+  - v230618-0f88c5d.synctargets.workload.kcp.io
 status: {}

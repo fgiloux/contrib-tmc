@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	kcpscheme "github.com/kcp-dev/kcp/pkg/server/scheme"
 	"github.com/stretchr/testify/require"
 
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
@@ -29,8 +30,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/restmapper"
-	"k8s.io/kubernetes/pkg/api/genericcontrolplanescheme"
-	_ "k8s.io/kubernetes/pkg/genericcontrolplane/apis/install"
 )
 
 // TestBuiltInInformableTypes tests that there is no drift between actual built-in types and the list that is hard-coded
@@ -81,9 +80,9 @@ func TestBuiltInInformableTypes(t *testing.T) {
 		{Group: "rbac.authorization.k8s.io", Version: "v1beta1"}:    {},
 	}
 
-	allKnownTypes := genericcontrolplanescheme.Scheme.AllKnownTypes()
+	allKnownTypes := kcpscheme.Scheme.AllKnownTypes()
 
-	// CRDs are not included in the genericcontrolplane scheme (because they're part of the apiextensions apiserver),
+	// CRDs are not included in the kcp scheme (because they're part of the apiextensions apiserver),
 	// so we have to manually add them
 	allKnownTypes[schema.GroupVersionKind{Group: "apiextensions.k8s.io", Version: "v1", Kind: "CustomResourceDefinition"}] = reflect.TypeOf(struct{}{})
 

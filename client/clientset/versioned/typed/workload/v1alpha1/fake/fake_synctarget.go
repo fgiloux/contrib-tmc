@@ -25,7 +25,6 @@ import (
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
-	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	testing "k8s.io/client-go/testing"
@@ -39,9 +38,9 @@ type FakeSyncTargets struct {
 	Fake *FakeWorkloadV1alpha1
 }
 
-var synctargetsResource = schema.GroupVersionResource{Group: "workload.kcp.io", Version: "v1alpha1", Resource: "synctargets"}
+var synctargetsResource = v1alpha1.SchemeGroupVersion.WithResource("synctargets")
 
-var synctargetsKind = schema.GroupVersionKind{Group: "workload.kcp.io", Version: "v1alpha1", Kind: "SyncTarget"}
+var synctargetsKind = v1alpha1.SchemeGroupVersion.WithKind("SyncTarget")
 
 // Get takes name of the syncTarget, and returns the corresponding syncTarget object, and an error if there is any.
 func (c *FakeSyncTargets) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.SyncTarget, err error) {

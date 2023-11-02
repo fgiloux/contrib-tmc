@@ -22,11 +22,10 @@ import (
 	"strings"
 
 	kcpdynamic "github.com/kcp-dev/client-go/dynamic"
+	"github.com/kcp-dev/kcp/pkg/server/requestinfo"
 
 	dynamic "k8s.io/client-go/dynamic"
 	"k8s.io/client-go/rest"
-
-	"github.com/kcp-dev/kcp/pkg/server/requestinfo"
 )
 
 // NewDynamicMetadataClusterClientForConfig returns a dynamic cluster client that only

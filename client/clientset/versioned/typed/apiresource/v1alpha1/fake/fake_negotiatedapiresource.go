@@ -25,7 +25,6 @@ import (
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
-	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	testing "k8s.io/client-go/testing"
@@ -39,9 +38,9 @@ type FakeNegotiatedAPIResources struct {
 	Fake *FakeApiresourceV1alpha1
 }
 
-var negotiatedapiresourcesResource = schema.GroupVersionResource{Group: "apiresource.kcp.io", Version: "v1alpha1", Resource: "negotiatedapiresources"}
+var negotiatedapiresourcesResource = v1alpha1.SchemeGroupVersion.WithResource("negotiatedapiresources")
 
-var negotiatedapiresourcesKind = schema.GroupVersionKind{Group: "apiresource.kcp.io", Version: "v1alpha1", Kind: "NegotiatedAPIResource"}
+var negotiatedapiresourcesKind = v1alpha1.SchemeGroupVersion.WithKind("NegotiatedAPIResource")
 
 // Get takes name of the negotiatedAPIResource, and returns the corresponding negotiatedAPIResource object, and an error if there is any.
 func (c *FakeNegotiatedAPIResources) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.NegotiatedAPIResource, err error) {

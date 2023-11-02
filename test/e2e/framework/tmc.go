@@ -38,8 +38,10 @@ import (
 	"time"
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
+	apiextensionsclient "github.com/kcp-dev/client-go/apiextensions/client"
 	"github.com/kcp-dev/kcp/cmd/sharded-test-server/third_party/library-go/crypto"
 	"github.com/kcp-dev/kcp/pkg/embeddedetcd"
+	"github.com/kcp-dev/kcp/pkg/server"
 	corev1alpha1 "github.com/kcp-dev/kcp/sdk/apis/core/v1alpha1"
 	kcpclientset "github.com/kcp-dev/kcp/sdk/client/clientset/versioned/cluster"
 	kubefixtures "github.com/kcp-dev/kcp/test/e2e/fixtures/kube"
@@ -49,7 +51,6 @@ import (
 	gopkgyaml "gopkg.in/yaml.v3"
 
 	corev1 "k8s.io/api/core/v1"
-	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	apierrors "k8s.io/apimachinery/pkg/util/errors"
@@ -64,7 +65,7 @@ import (
 	"k8s.io/component-base/cli/flag"
 
 	tmcoptions "github.com/kcp-dev/contrib-tmc/cmd/tmc/options"
-	"github.com/kcp-dev/contrib-tmc/tmc/server"
+	// "github.com/kcp-dev/contrib-tmc/tmc/server"
 )
 
 // TestServerArgs returns the set of kcp args used to start a test

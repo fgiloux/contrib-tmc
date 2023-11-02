@@ -26,11 +26,11 @@ import (
 	kcpcache "github.com/kcp-dev/apimachinery/v2/pkg/cache"
 	kcpdynamic "github.com/kcp-dev/client-go/dynamic"
 	kcpcorev1informers "github.com/kcp-dev/client-go/informers/core/v1"
-
-	// TODO (FGI): we should not have a dependency on kcp. contrib-tmc indexers, logging, reconcilers should be used instead
 	"github.com/kcp-dev/kcp/pkg/indexers"
 	"github.com/kcp-dev/kcp/pkg/logging"
 	"github.com/kcp-dev/kcp/pkg/reconciler/apis/apiexport"
+
+	// TODO (FGI): we should not have a dependency on kcp. contrib-tmc indexers, logging, reconcilers should be used instead
 	"github.com/kcp-dev/logicalcluster/v3"
 
 	corev1 "k8s.io/api/core/v1"

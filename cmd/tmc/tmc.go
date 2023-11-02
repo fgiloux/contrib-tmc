@@ -21,20 +21,17 @@ import (
 	"os"
 	"time"
 
+	cacheclient "github.com/kcp-dev/kcp/pkg/cache/client"
+	"github.com/kcp-dev/kcp/pkg/cache/client/shard"
 	"github.com/spf13/cobra"
 
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	"k8s.io/client-go/tools/clientcmd"
-
 	"k8s.io/component-base/cli"
 	logsapiv1 "k8s.io/component-base/logs/api/v1"
 	_ "k8s.io/component-base/logs/json/register"
 	"k8s.io/component-base/version"
-
 	"k8s.io/klog/v2"
-
-	cacheclient "github.com/kcp-dev/kcp/pkg/cache/client"
-	"github.com/kcp-dev/kcp/pkg/cache/client/shard"
 
 	clientoptions "github.com/kcp-dev/contrib-tmc/cmd/tmc/options"
 	"github.com/kcp-dev/contrib-tmc/pkg/features"
@@ -131,10 +128,10 @@ func main() {
 				return err
 			}
 			mgr.Start(ctx)
-			 if err != nil {
-                                return err
+			if err != nil {
+				return err
 			}
-			<- ctx.Done()
+			<-ctx.Done()
 			logger.Info("stopping")
 			return nil
 		},

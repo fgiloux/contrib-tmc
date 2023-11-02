@@ -19,12 +19,12 @@ package manager
 import (
 	"context"
 
-	"k8s.io/client-go/rest"
-
+	kcpapiextensionsclientset "github.com/kcp-dev/client-go/apiextensions/client"
 	kcpdynamic "github.com/kcp-dev/client-go/dynamic"
 	kcpkubernetesclientset "github.com/kcp-dev/client-go/kubernetes"
-
 	kcpclusterclientset "github.com/kcp-dev/kcp/sdk/client/clientset/versioned/cluster"
+
+	"k8s.io/client-go/rest"
 
 	tmcclusterclientset "github.com/kcp-dev/contrib-tmc/client/clientset/versioned/cluster"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/apiresource"
@@ -41,7 +41,6 @@ import (
 	workloadresource "github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/resource"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/synctarget"
 	"github.com/kcp-dev/contrib-tmc/pkg/reconciler/workload/synctargetexports"
-	kcpapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/kcp/clientset/versioned"
 )
 
 func (m *Manager) installApiResourceController(ctx context.Context) error {

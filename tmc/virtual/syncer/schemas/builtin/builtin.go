@@ -26,7 +26,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/kube-openapi/pkg/common"
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
-	"k8s.io/kubernetes/pkg/apis/core/install/genericcontrolplane"
 	generatedopenapi "k8s.io/kubernetes/pkg/generated/openapi"
 )
 
@@ -35,7 +34,6 @@ import (
 var SyncerSchemas map[apisv1alpha1.GroupResource]*apisv1alpha1.APIResourceSchema
 
 func init() {
-	genericcontrolplane.Install(legacyscheme.Scheme)
 	schemes := []*runtime.Scheme{legacyscheme.Scheme}
 	openAPIDefinitionsGetters := []common.GetOpenAPIDefinitions{generatedopenapi.GetOpenAPIDefinitions}
 
