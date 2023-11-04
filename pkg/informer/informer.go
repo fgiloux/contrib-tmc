@@ -835,7 +835,6 @@ type crdGVRSource struct {
 var builtInInformableTypes map[schema.GroupVersionResource]GVRPartialMetadata = map[schema.GroupVersionResource]GVRPartialMetadata{
 	gvrFor("", "v1", "configmaps"):                                                          withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "ConfigMap", "configmap"),
 	gvrFor("", "v1", "events"):                                                              withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "Event", "event"),
-	gvrFor("", "v1", "limitranges"):                                                         withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "LimitRange", "limitrange"),
 	gvrFor("", "v1", "namespaces"):                                                          withGVRPartialMetadata(apiextensionsv1.ClusterScoped, "Namespace", "namespace"),
 	gvrFor("", "v1", "resourcequotas"):                                                      withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "ResourceQuota", "resourcequota"),
 	gvrFor("", "v1", "secrets"):                                                             withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "Secret", "secret"),
@@ -852,6 +851,9 @@ var builtInInformableTypes map[schema.GroupVersionResource]GVRPartialMetadata = 
 	gvrFor("admissionregistration.k8s.io", "v1alpha1", "validatingadmissionpolicies"):       withGVRPartialMetadata(apiextensionsv1.ClusterScoped, "ValidatingAdmissionPolicy", "validatingadmissionpolicy"),
 	gvrFor("admissionregistration.k8s.io", "v1alpha1", "validatingadmissionpolicybindings"): withGVRPartialMetadata(apiextensionsv1.ClusterScoped, "ValidatingAdmissionPolicyBinding", "validatingadmissionpolicybinding"),
 	gvrFor("apiextensions.k8s.io", "v1", "customresourcedefinitions"):                       withGVRPartialMetadata(apiextensionsv1.ClusterScoped, "CustomResourceDefinition", "customresourcedefinition"),
+	gvrFor("core.kcp.io", "v1alpha1", "logicalclusters"):                                    withGVRPartialMetadata(apiextensionsv1.ClusterScoped, "LogicalCluster", "logicalcluster"),
+	// limitranges are not part of kcp, they may get imported from the target clusters
+	// gvrFor("", "v1", "limitranges"):                                                      withGVRPartialMetadata(apiextensionsv1.NamespaceScoped, "LimitRange", "limitrange"),
 }
 
 func (s *crdGVRSource) GVRs() map[schema.GroupVersionResource]GVRPartialMetadata {

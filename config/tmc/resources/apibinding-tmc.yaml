@@ -20,16 +20,11 @@ spec:
     resource: "serviceaccounts"
     all: true
     state: Accepted
-# ????
-#  - group: ""
-#    resource: "limitranges"
-#    all: true
-#    state: Accepted
   - group: ""
     resource: "resourcequotas"
     all: true
     state: Accepted
-  - group: "events.k8s.io"
+  - group: ""
     resource: "events"
     all: true
     state: Accepted
@@ -39,6 +34,10 @@ spec:
     state: Accepted
   - group: ""
     resource: "secrets"
+    all: true
+    state: Accepted
+  - group: "events.k8s.io"
+    resource: "events"
     all: true
     state: Accepted
   - group: "coordination.k8s.io"
@@ -54,17 +53,20 @@ spec:
     all: true
     state: Accepted
   - group: "admissionregistration.k8s.io"
+    resource: "validatingadmissionpolicies"
+    all: true
+    state: Accepted
+  - group: "admissionregistration.k8s.io"
     resource: "validatingadmissionpolicybindings"
     all: true
     state: Accepted
-# ????
   - group: "certificates.k8s.io"
     resource: "certificatesigningrequests"
     all: true
     state: Accepted
   - group: "core.kcp.io"
     resource: "shards"
-    identityHash: "793f074acdc6cfb7da6cdca906a698320971caf43b01cf5df0fdcefed5dacf02"
+    identityHash: "82308c7d3146eed072bd6f8d075ad83075262f73555617f03cc0e798c4c99b7d"
     state: Accepted
     all: true
   - group: "apiextensions.k8s.io"
@@ -73,7 +75,7 @@ spec:
     all: true
   - group: "core.kcp.io"
     resource: "logicalclusters"
-    identityHash: "793f074acdc6cfb7da6cdca906a698320971caf43b01cf5df0fdcefed5dacf02"
+    identityHash: "82308c7d3146eed072bd6f8d075ad83075262f73555617f03cc0e798c4c99b7d"
     state: Accepted
     all: true
   - group: "rbac.authorization.k8s.io"

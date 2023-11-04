@@ -9,6 +9,7 @@ spec:
     - v124.deployments.apps
     - v124.pods.core
     - v124.endpoints.core
+    # TODO: limitranges could be added
   maximalPermissionPolicy:
     local: {}
 status: {}
