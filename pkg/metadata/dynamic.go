@@ -71,7 +71,7 @@ func (t *metadataTransport) RoundTrip(req *http.Request) (*http.Response, error)
 }
 
 func partialType(req *http.Request) (string, error) {
-	// strip off /cluster/<lcluster>
+	// strip off /clusters/<lcluster>
 	baseReq := *req
 	if strings.HasPrefix(req.URL.Path, "/clusters/") {
 		parts := strings.SplitN(req.URL.Path, "/", 4)
@@ -82,7 +82,16 @@ func partialType(req *http.Request) (string, error) {
 		baseURL.Path = "/" + parts[3]
 		baseReq.URL = &baseURL
 	}
-
+	// strip of /services/apiexport/<lcluster>/<apiexport>/clusters/<cluster>
+	if strings.HasPrefix(req.URL.Path, "/services/") {
+		parts := strings.SplitN(req.URL.Path, "/", 8)
+		if len(parts) < 8 {
+			return "", fmt.Errorf("invalid request uri: %s", req.URL.String())
+		}
+		baseURL := *req.URL
+		baseURL.Path = "/" + parts[7]
+		baseReq.URL = &baseURL
+	}
 	info, err := requestinfo.NewFactory().NewRequestInfo(&baseReq)
 	if err != nil {
 		return "", err
