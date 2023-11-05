@@ -1,89 +1,108 @@
 apiVersion: apis.kcp.io/v1alpha1
-kind: APIExport
+kind: APIBinding
 metadata:
-  creationTimestamp: null
   name: tmc.kcp.io
 spec:
-  latestResourceSchemas:
-  - v230711-a961437.apiresourceimports.apiresource.kcp.io
-  - v230711-a961437.negotiatedapiresources.apiresource.kcp.io
-  - v230618-0f88c5d.locations.scheduling.kcp.io
-  - v230618-0f88c5d.placements.scheduling.kcp.io
-  - v230618-0f88c5d.synctargets.workload.kcp.io
+  reference:
+    export:
+      name: tmc.kcp.io
+      path: root:tmc
   permissionClaims:
+  - group: "apis.kcp.io"
+    resource: "apibindings"
+    state: Accepted
+    all: true
   - group: ""
     resource: "namespaces"
     all: true
+    state: Accepted
   - group: ""
     resource: "serviceaccounts"
     all: true
+    state: Accepted
   - group: ""
     resource: "resourcequotas"
     all: true
+    state: Accepted
   - group: ""
     resource: "events"
     all: true
+    state: Accepted
   - group: ""
     resource: "configmaps"
     all: true
+    state: Accepted
   - group: ""
     resource: "secrets"
     all: true
+    state: Accepted
   - group: "events.k8s.io"
     resource: "events"
     all: true
+    state: Accepted
   - group: "coordination.k8s.io"
     resource: "leases"
     all: true
+    state: Accepted
   - group: "admissionregistration.k8s.io"
     resource: "mutatingwebhookconfigurations"
     all: true
+    state: Accepted
   - group: "admissionregistration.k8s.io"
     resource: "validatingwebhookconfigurations"
     all: true
+    state: Accepted
   - group: "admissionregistration.k8s.io"
     resource: "validatingadmissionpolicies"
     all: true
+    state: Accepted
   - group: "admissionregistration.k8s.io"
     resource: "validatingadmissionpolicybindings"
     all: true
+    state: Accepted
   - group: "certificates.k8s.io"
     resource: "certificatesigningrequests"
     all: true
+    state: Accepted
   - group: "core.kcp.io"
     resource: "shards"
-    identityHash: "82308c7d3146eed072bd6f8d075ad83075262f73555617f03cc0e798c4c99b7d"
+    identityHash: "{{core_id_hash}}"
+    state: Accepted
     all: true
   - group: "apiextensions.k8s.io"
     resource: "customresourcedefinitions"
+    state: Accepted
     all: true
   - group: "core.kcp.io"
     resource: "logicalclusters"
-    identityHash: "82308c7d3146eed072bd6f8d075ad83075262f73555617f03cc0e798c4c99b7d"
+    identityHash: "{{core_id_hash}}"
+    state: Accepted
     all: true
   - group: "rbac.authorization.k8s.io"
     resource: "roles"
-    all: true
-  - group: "rbac.authorization.k8s.io"
-    resource: "clusterroles"
+    state: Accepted
     all: true
   - group: "rbac.authorization.k8s.io"
     resource: "rolebindings"
+    state: Accepted
+    all: true
+  - group: "rbac.authorization.k8s.io"
+    resource: "clusterroles"
+    state: Accepted
     all: true
   - group: "rbac.authorization.k8s.io"
     resource: "clusterrolebindings"
+    state: Accepted
     all: true
   - group: "apis.kcp.io"
     resource: "apiexports"
+    state: Accepted
     all: true
   - group: "apis.kcp.io"
     resource: "apibindings"
+    state: Accepted
     all: true
   - group: "apis.kcp.io"
     resource: "apiresourceschemas"
+    state: Accepted
     all: true
-  identity:
-    secretRef:
-      name: tmc-identity
-      namespace: default
-status: {}

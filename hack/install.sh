@@ -22,12 +22,18 @@ kubectl apply -f ./config/rbac
 kubectl apply -f ./config/tmc/workspacetype-tmc.yaml
 kubectl apply -f ./config/tmc/clusterworkspace-tmc.yaml
 kubectl apply -f ./config/rootcompute/clusterworkspace-compute.yaml
+id_hash=$(kubectl get apiexport shards.core.kcp.io -o=jsonpath='{.status.identityHash}')
 
 sleep 1
 kubectl ws root:tmc
 kubectl apply -f ./config/tmc/resources
+kubectl apply -f ./config/tmc/resources/export/apiexport-identity-secret.yaml
+cat ./config/tmc/resources/export/apiexport-tmc.yaml | sed "s/{{core_id_hash}}/$id_hash/g" | kubectl apply -f -
+cat ./config/tmc/resources/export/apibinding-tmc.yaml | sed "s/{{core_id_hash}}/$id_hash/g" | kubectl apply -f -
 
 kubectl ws root:compute
 kubectl apply -f ./config/rootcompute/kube-1.24
+
+kubectl ws root:tmc
 
 
